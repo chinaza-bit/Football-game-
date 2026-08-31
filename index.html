@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Matchday — Pro Football</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ================= TAP-TO-START GATE (needed to request landscape/fullscreen) ================= -->
+<div id="startGate">
+  <div class="badge">🏟️⚽</div>
+  <h1>Matchday</h1>
+  <button id="enterBtn">▶ Tap to Enter</button>
+  <p>Rotates to landscape automatically where your browser allows it.</p>
+</div>
+
+<!-- ================= ROTATE PROMPT ================= -->
+<div id="rotateOverlay">
+  <div class="rotateIcon">📱</div>
+  <p>Matchday plays best in landscape.<br>Please rotate your device.</p>
+</div>
+
+<!-- ================= MENU (step wizard) ================= -->
+<div id="screenMenu">
+  <div class="brand">
+    <div class="badge">🏟️⚽</div>
+    <h1>Matchday</h1>
+  </div>
+
+  <div class="menuBody">
+
+    <div class="card step" data-step="0">
+      <h3>🏆 Your Club</h3>
+      <div class="pillGroup" id="homeLeagueTabs"></div>
+      <div class="clubGrid" id="homeClubGrid" style="margin-top:12px;"></div>
+      <div class="customBox hidden" id="homeCustomBox">
+        <label>Club Name</label>
+        <input type="text" id="homeCustomName" value="Riverside United" maxlength="22">
+        <label>Jersey Colour</label>
+        <div class="colorRow"><input type="color" id="homeCustomColor" value="#2f6fed"></div>
+      </div>
+      <div class="pickedRow" id="homePickedRow"></div>
+    </div>
+
+    <div class="card step" data-step="1">
+      <h3>⚔️ Opponent</h3>
+      <div class="pillGroup" id="opponentModePills">
+        <div class="pill active" data-m="choose">I'll Choose</div>
+        <div class="pill" data-m="random">Computer Picks (Random)</div>
+      </div>
+      <div id="awayChooseWrap" style="margin-top:14px;">
+        <div class="pillGroup" id="awayLeagueTabs"></div>
+        <div class="clubGrid" id="awayClubGrid" style="margin-top:12px;"></div>
+        <div class="customBox hidden" id="awayCustomBox">
+          <label>Club Name</label>
+          <input type="text" id="awayCustomName" value="Ironbridge FC" maxlength="22">
+          <label>Jersey Colour</label>
+          <div class="colorRow"><input type="color" id="awayCustomColor" value="#e6472e"></div>
+        </div>
+        <div class="pickedRow" id="awayPickedRow"></div>
+      </div>
+      <div id="awayRandomWrap" class="hidden" style="margin-top:10px;color:var(--muted);font-size:13px;">
+        🎲 The computer will pick a random club from any league when you kick off.
+      </div>
+    </div>
+
+    <div class="card step" data-step="2">
+      <h3>🏠 Venue</h3>
+      <div class="pillGroup" id="venuePills">
+        <div class="pill active" data-v="home">Play at Home</div>
+        <div class="pill" data-v="away">Play Away</div>
+      </div>
+    </div>
+
+    <div class="card step" data-step="3">
+      <h3>👕 Choose Your Player</h3>
+      <div class="rosterGrid" id="rosterGrid"></div>
+    </div>
+
+    <div class="card step" data-step="4">
+      <h3>⚙️ Match Settings</h3>
+      <div class="settingsGrid">
+        <div>
+          <div class="subLabel" style="margin-top:0;">Match Length</div>
+          <div class="pillGroup" id="lengthPills">
+            <div class="pill" data-len="180">Short (3 min)</div>
+            <div class="pill active" data-len="360">Standard (6 min)</div>
+            <div class="pill" data-len="600">Long (10 min)</div>
+          </div>
+        </div>
+        <div>
+          <div class="subLabel" style="margin-top:0;">Difficulty</div>
+          <div class="pillGroup" id="diffPills">
+            <div class="pill" data-d="0.8">Easy</div>
+            <div class="pill active" data-d="1">Normal</div>
+            <div class="pill" data-d="1.25">Hard</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="wizardFooter">
+    <button id="backBtn" class="navBtn secondary">◀ Back</button>
+    <div class="stepDots" id="stepDots"></div>
+    <button id="nextBtn" class="navBtn primary">Next ▶</button>
+  </div>
+</div>
+
+<!-- ================= KICKOFF INTRO ================= -->
+<div id="screenKickoff">
+  <div class="stadiumLine">🏟️ Today's Fixture</div>
+  <div class="vsRow">
+    <div class="vsTeam"><div class="crest" id="crestHome"></div><div class="tname" id="vsHomeName"></div></div>
+    <div class="vsBadge">VS</div>
+    <div class="vsTeam"><div class="crest" id="crestAway"></div><div class="tname" id="vsAwayName"></div></div>
+  </div>
+  <div id="kickoffSub">Kick-off in a moment...</div>
+</div>
+
+<!-- ================= MATCH ================= -->
+<div id="gameWrap">
+  <div id="hud">
+    <div class="score"><span class="home" id="homeScore">0</span>—<span class="away" id="awayScore">0</span></div>
+    <div id="clock">0'</div>
+    <div id="status">Move + Space to shoot</div>
+  </div>
+  <div id="canvasWrap">
+    <canvas id="field" width="880" height="620"></canvas>
+    <div id="eventBanner"></div>
+    <div id="joystick"><div id="joystickKnob"></div></div>
+    <div id="actionButtons">
+      <button id="runBtn" class="actionBtn run">RUN</button>
+      <button id="shortPassBtn" class="actionBtn">SHORT</button>
+      <button id="longPassBtn" class="actionBtn">LONG</button>
+      <button id="shotBtn" class="actionBtn shot">SHOT</button>
+    </div>
+  </div>
+  <div id="controlsHint">
+    <b>Arrows / WASD</b> or the on-screen stick moves your gold-ringed player &nbsp;|&nbsp;
+    <b>Space</b> shoot &nbsp;|&nbsp; <b>J</b> short pass &nbsp;|&nbsp; <b>K</b> long pass &nbsp;|&nbsp; <b>Shift</b> sprint &nbsp;|&nbsp;
+    Control auto-switches to whichever of your players is nearest the ball.
+  </div>
+</div>
+
+<!-- ================= MODAL ================= -->
+<div id="modalOverlay">
+  <div id="modalBox">
+    <h2 id="modalTitle">Half Time</h2>
+    <div id="modalScore">0 — 0</div>
+    <table class="statTable" id="statTable"></table>
+    <button id="modalBtn">Continue</button>
+  </div>
+</div>
+
+<script src="js/game.js"></script>
+</body>
+</html>
